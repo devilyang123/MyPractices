@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.xiao.mapper.MenuMapper">
+
+    <select id="getAllMenu" resultType="Menu">
+        SELECT
+          menu_id,
+          menu_name,
+          menu_url
+        FROM
+          tb_menu
+    </select>
+
+
+
+</mapper>
