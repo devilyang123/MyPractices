@@ -4,4 +4,5 @@
 target/
 .svn/
 .idea
+test/
 springboot.iml
