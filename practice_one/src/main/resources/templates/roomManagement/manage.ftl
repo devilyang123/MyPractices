@@ -28,7 +28,7 @@
 </blockquote>
 
 <table class="layui-hide" id="myTable"  lay-filter="myTable"></table>
-<table class="layui-hide" id="oneTable"></table>
+<table class="layui-hide" id="oneTable" lay-filter="oneTable"></table>
 
 <script type="text/html" id="operatorBtn">
     <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="detail">查看</a>
@@ -295,6 +295,127 @@
             });
 
         });
+
+        //监听房屋信息列表表格右侧
+        table.on('tool(oneTable)', function(obj){
+            // var checkStatus = table.checkStatus(obj.config.id);
+            var roomId = obj.data.roomId;
+            switch(obj.event){
+                case 'detail':
+                    console.log(obj.data);
+                    var index1 = layer.open({
+                        type: 2,
+                        title:"查看住房信息",
+                        // area: ['900px', '500px'],
+                        // shadeClose: true, //点击遮罩关闭
+                        content: './show',
+                        success:function (layero, index) {
+                            var body = layui.layer.getChildFrame('body', index); // 取到弹出层里的元素
+                            //设置房号
+                            body.find(".roomNum").val(obj.data.roomNum);
+                            //设置规格
+                            if(obj.data.roomSize === 0){
+                                body.find(".roomSize").val("单间");
+                            }else if (obj.data.roomSize === 1) {
+                                body.find(".roomSize").val("一室一厅");
+                            }
+                            else if (obj.data.roomSize === 2) {
+                                body.find(".roomSize").val("两室一厅");
+                            }else{
+                                body.find(".roomSize").val("三室一厅");
+                            }
+                            //设置面积
+                            body.find(".roomArea").val(obj.data.roomArea);
+                            //设置承租人
+                            if(obj.data.roomTenantId === null){
+                                body.find(".roomTenantId").val("无");
+                            }
+                            //设置出租日期
+                            if(obj.data.startDate === null){
+                                body.find(".startDate").val("未出租");
+                            }
+                            //设置结束日期
+                            if(obj.data.endDate === null){
+                                body.find(".endDate").val("未出租");
+                            }
+                            //设置状态
+                            if(obj.data.roomStatus === 0){
+                                body.find(".roomStatus").val("未租");
+                            }else if(obj.data.roomStatus === 1){
+                                body.find(".roomStatus").val("已租");
+                            }else{
+                                body.find(".roomStatus").val("预定");
+                            }
+                            //设置房屋设施/描述
+                            body.find(".roomDesc").val(obj.data.roomDesc);
+                            // 记得重新渲染表单
+                            // form.render();
+                            //获取新窗口对象
+                            var iframeWindow = layero.find('iframe')[0].contentWindow;
+                            //重新渲染表单
+                            iframeWindow.layui.form.render();
+                            setTimeout(function(){
+                                layui.layer.tips('点击此处返回房屋信息列表', '.layui-layer-setwin .layui-layer-close', {
+                                    tips: 3
+                                });
+                            },100)
+                        }
+                    });
+                    layui.layer.full(index1);
+                    break;
+                case 'edit':
+                    var index2 = layer.open({
+                        type: 2,
+                        title:"修改住房信息",
+                        content: './edit',
+                        success:function (layero, index) {
+                            var body = layui.layer.getChildFrame('body', index); // 取到弹出层里的元素
+                            body.find(".roomId").val(obj.data.roomId);
+                            // 记得重新渲染表单
+                            // form.render();
+                            //获取新窗口对象
+                            var iframeWindow = layero.find('iframe')[0].contentWindow;
+                            //重新渲染表单
+                            iframeWindow.layui.form.render();
+                            setTimeout(function(){
+                                layui.layer.tips('点击此处返回房屋信息列表', '.layui-layer-setwin .layui-layer-close', {
+                                    tips: 3
+                                });
+                            },100)
+                        }
+                    });
+                    layui.layer.full(index2);
+                    break;
+                case 'del':
+                    layer.confirm('此操作不可逆，确定删除吗？', {
+                                btn: ['是','否'],icon: 2, title:'警告'},
+                            function(index){
+                                $.ajax({
+                                    url:"/room/deleteRoom",
+                                    data:obj.data.roomId,
+                                    type:"DELETE",
+                                    dataType:"json",
+                                    success:function (data) {
+                                        if(data.result){
+                                            layer.msg("删除成功",{time:2000});
+                                            table.reload('myTable',{page:{curr:1}});
+                                        }else{
+                                            layer.msg("删除失败",{time:2000});
+                                            table.reload('myTable',{page:{curr:1}});
+                                        }
+                                    },
+                                    error:function () {
+                                        layer.msg("服务器异常",{time:2000});
+                                    }
+                                });
+                                layer.close(index);
+                            },function () {
+                                //点击否按钮
+                            });
+                    break;
+            }
+        });
+
 
         //添加住房信息按钮点击事件
         $('#add-btn').on('click', function(){

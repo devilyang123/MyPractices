@@ -18,6 +18,8 @@
           room_tenant_id
         FROM
           tb_room
+        ORDER BY
+          room_num
     </select>
 
     <!-- 添加住房信息 -->

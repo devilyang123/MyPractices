@@ -1,5 +1,7 @@
 package com.xiao.utils;
 
+import javax.servlet.http.HttpServletRequest;
+
 /**
  * @Description 工具类
  * @Auther: 笑笑
@@ -15,5 +17,16 @@ public class Tools {
      */
     public static boolean notEmpty(String s){
         return s != null && !s.equals("") && !s.equals("null");
+    }
+
+    /**
+     * @Description 判断请求是否是Ajax请求
+     * @Date 10:00 2018/9/17
+     * @Param
+     * @return
+     */
+    public static boolean isAjax(HttpServletRequest request){
+        return(request.getHeader("X-Requested-With")!=null
+                &&"XMLHttpRequest".equals(request.getHeader("X-Requested-With").toString()));
     }
 }

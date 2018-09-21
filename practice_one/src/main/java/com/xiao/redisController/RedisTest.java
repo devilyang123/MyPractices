@@ -31,15 +31,16 @@ public class RedisTest {
     @ResponseBody
     public List<Room> test(){
 
-//        String s = JSONUtils.toJSONString(roomMapper.getRoom("001"));
-//        System.out.println(s);
-//        redisTemplate.opsForValue().set("room",roomMapper.getRoom("001").toString());
+          //将房屋信息集合转换成json字符串，存入redis中
           redisTemplate.opsForValue().set("room",JsonUtils.objectToJson(roomMapper.getAllRoom()));
+          //通过key获取json字符串
           String room = redisTemplate.opsForValue().get("room");
+          //将json字符串转换成room集合
           List<Room> roomList = JsonUtils.jsonToList(room, Room.class);
           System.err.println(room);
           System.err.println(roomList);
-//          redisTemplate.delete("room");
+          //删除redis中的数据
+          redisTemplate.delete("room");
           return roomList;
     }
 }
